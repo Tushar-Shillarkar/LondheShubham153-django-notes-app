@@ -28,3 +28,6 @@ Install Nginx reverse proxy to make this application available
 
 `sudo apt-get update`
 `sudo apt install nginx`
+/*git add .
+git commit -m "testing webhook slash fix"
+git push origin main/*
