@@ -1,34 +1,53 @@
+@Library("Shared") _
 pipeline {
-    agent any 
-    
-    stages{
-        stage("Clone Code"){
+    agent { label "vinod" }
+
+    stages {
+        stage("hello") {
             steps {
-                echo "Cloning the code"
-                git url:"https://github.com/LondheShubham153/django-notes-app.git", branch: "main"
-            }
-        }
-        stage("Build"){
-            steps {
-                echo "Building the image"
-                sh "docker build -t my-note-app ."
-            }
-        }
-        stage("Push to Docker Hub"){
-            steps {
-                echo "Pushing the image to docker hub"
-                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag my-note-app ${env.dockerHubUser}/my-note-app:latest"
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/my-note-app:latest"
+                script {
+                    hey()
                 }
             }
         }
-        stage("Deploy"){
+        
+        stage("Pull") {
             steps {
-                echo "Deploying the container"
-                sh "docker-compose down && docker-compose up -d"
-                
+                script {
+                    clone("https://github.com/Tushar-Shillarkar/LondheShubham153-django-notes-app.git", "main")
+                }
+            }
+        }
+        
+        stage("Build") {
+            steps {
+                script {
+                    
+                    dockerBuild("notes-app", "latest", "tusharshillarkar")
+                }
+            }
+        }
+        
+        stage("Test") {
+            steps {
+                echo "test the code"
+            }
+        }
+        
+        stage("Push") {
+            steps {
+                script {
+                    DockerPush("notes-app", "latest", "tusharshillarkar")
+                }
+            }
+        }
+        
+        stage("Deploy") {
+            steps {
+                echo "deploy the code"
+                sh "docker compose up -d"
+                sh "docker image tag notes-app:latest tusharshillarkar/notes-app:latest"
+                sh "docker push tusharshillarkar/notes-app:latest"
             }
         }
     }
