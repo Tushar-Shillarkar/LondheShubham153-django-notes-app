@@ -45,9 +45,8 @@ pipeline {
         stage("Deploy") {
             steps {
                 echo "deploy the code"
-                sh "docker compose up -d"
-                sh "docker image tag notes-app:latest tusharshillarkar/notes-app:latest"
-                sh "docker push tusharshillarkar/notes-app:latest"
+                sh "docker compose down && docker compose up -d"
+              
             }
         }
     }
